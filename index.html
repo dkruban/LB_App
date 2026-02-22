@@ -7,14 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #FF4757; /* Red */
+            --primary: #FF4757;
             --secondary: #2ED573;
             --accent: #FFA502;
             --dark: #2F3542;
             --gold: #FFD700;
             --glass: rgba(255, 255, 255, 0.15);
             --glass-border: rgba(255, 255, 255, 0.3);
-            --text-shad: 0 4px 0 rgba(0,0,0,0.2);
         }
 
         * { 
@@ -24,7 +23,7 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #2c3e50; /* Fallback color */
+            background-color: #2c3e50; 
             min-height: 100vh;
             color: var(--dark);
             overflow-x: hidden;
@@ -43,67 +42,49 @@
             z-index: -2;
         }
 
-        /* Dark overlay to make text readable over video */
         .video-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6); /* Darkens video */
+            background: rgba(0, 0, 0, 0.6); 
             z-index: -1;
-            backdrop-filter: blur(5px); /* Slight blur for premium feel */
+            backdrop-filter: blur(5px);
         }
 
         /* --- INTRO SCREEN --- */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Darker intro */
+            background: rgba(0, 0, 0, 0.85);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 2000; transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
         #intro-screen.slide-up { transform: translateY(-100%); pointer-events: none; }
 
-        /* PREMIUM PINK/RED TITLE STYLE */
         .title-big {
             font-family: 'Fredoka One', cursive;
-            font-size: clamp(3rem, 12vw, 8rem); /* Huge responsive text */
+            font-size: clamp(3rem, 12vw, 8rem);
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
             line-height: 1.1;
-            
-            /* Pink to Red Gradient Text */
             background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 45%, #ff4757 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            
-            /* Premium Glow Effect */
             filter: drop-shadow(0 0 30px rgba(255, 71, 87, 0.6));
-            
-            opacity: 0; /* Start hidden */
+            opacity: 0; 
             white-space: nowrap;
         }
 
-        /* Slow Motion Slide In Animation */
         @keyframes slideInPremium {
-            0% { 
-                transform: translateX(-100vw) rotate(-5deg); 
-                opacity: 0; 
-            }
+            0% { transform: translateX(-100vw) rotate(-5deg); opacity: 0; }
             10% { opacity: 1; }
-            100% { 
-                transform: translateX(0) rotate(0deg); 
-                opacity: 1; 
-            }
+            100% { transform: translateX(0) rotate(0deg); opacity: 1; }
         }
+        .title-animating { animation: slideInPremium 3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
-        .title-animating {
-            animation: slideInPremium 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        /* --- BLAST ANIMATION --- */
         .subtitle {
             font-family: 'Bangers', cursive;
             font-size: 5rem;
@@ -112,26 +93,14 @@
             margin-bottom: 60px;
             opacity: 0;
             text-shadow: 4px 4px 0 #000, 0 0 20px rgba(255, 215, 0, 0.8);
-            /* BLAST EFFECT */
             animation: blastIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.5s forwards;
         }
 
         @keyframes blastIn {
-            0% { 
-                transform: scale(5) rotate(15deg); 
-                opacity: 0; 
-                filter: blur(20px);
-            }
-            50% { 
-                transform: scale(0.8) rotate(-10deg); 
-                opacity: 1; 
-                filter: blur(0px);
-            }
+            0% { transform: scale(5) rotate(15deg); opacity: 0; filter: blur(20px); }
+            50% { transform: scale(0.8) rotate(-10deg); opacity: 1; filter: blur(0px); }
             70% { transform: scale(1.1); }
-            100% { 
-                transform: scale(1) rotate(0deg); 
-                opacity: 1; 
-            }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
 
         .btn-main-start {
@@ -142,15 +111,13 @@
             box-shadow: 0 15px 0 #c0392b, 0 25px 30px rgba(0,0,0,0.4);
             cursor: pointer; margin-top: 50px;
             transition: all 0.2s; opacity: 0; 
-            animation: fadeIn 1s ease 3s forwards; /* Fade in after pop */
+            animation: fadeIn 1s ease 3s forwards;
             position: relative; overflow: hidden;
             border: 4px solid white;
         }
         .btn-main-start:active { transform: translateY(20px); box-shadow: 0 0 0 #c0392b; }
-        
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- SETTINGS BUTTON --- */
         .settings-fab {
             position: fixed; top: 20px; right: 20px; width: 60px; height: 60px;
             background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
@@ -161,7 +128,6 @@
         }
         .settings-fab:hover { transform: rotate(90deg) scale(1.1); background: rgba(255,255,255,0.4); }
 
-        /* --- APP CONTAINER --- */
         #app { 
             max-width: 1000px; margin: 0 auto; padding: 20px; 
             display: none; opacity: 0; transition: opacity 1s; 
@@ -169,7 +135,6 @@
         }
         #app.visible { display: block; opacity: 1; }
 
-        /* --- TOOLBAR --- */
         .toolbar {
             display: flex; justify-content: center; flex-wrap: wrap; gap: 15px;
             margin-bottom: 40px; 
@@ -189,7 +154,6 @@
         .btn-refresh { background: linear-gradient(135deg, var(--accent), #f9ca24); }
         .btn-new-game { background: linear-gradient(135deg, var(--primary), #c0392b); }
 
-        /* --- PODIUM (PREMIUM) --- */
         .section-title {
             text-align: center; font-family: 'Bangers', cursive; color: white;
             font-size: 4rem; text-shadow: 5px 5px 0 var(--primary), -2px -2px 0 #000; 
@@ -225,7 +189,7 @@
             padding-top: 80px; position: relative; overflow: hidden;
             box-shadow: inset 0 20px 30px rgba(255,255,255,0.2), 0 30px 50px rgba(0,0,0,0.5);
             border: 4px solid rgba(255,255,255,0.3);
-            background-size: 200% 200%; /* For gradient animation */
+            background-size: 200% 200%;
             animation: bgFlow 5s infinite alternate;
         }
         
@@ -235,7 +199,6 @@
         .podium-2 { order: 1; z-index: 5; } .podium-2 .podium-body { height: 230px; background: linear-gradient(180deg, #dfe6e9, #b2bec3); }
         .podium-3 { order: 3; z-index: 4; } .podium-3 .podium-body { height: 180px; background: linear-gradient(180deg, #e17055, #d63031); }
 
-        /* --- LIST --- */
         .list-container { padding: 20px; position: relative; }
         .list-row {
             display: flex; align-items: center; 
@@ -272,7 +235,6 @@
         .btn-minus { background: var(--primary); }
         .btn-del { background: #a4b0be; font-size: 1.4rem; width: 45px; height: 45px;}
 
-        /* --- COMIC EFFECTS --- */
         .comic-text {
             position: absolute; font-family: 'Bangers', cursive;
             font-size: 5rem; color: #ff4757; 
@@ -282,7 +244,6 @@
         }
         @keyframes comicPop { 0% { transform: scale(0) rotate(-30deg); opacity: 0; } 50% { transform: scale(1.5) rotate(10deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 0; } }
 
-        /* --- MODALS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
@@ -300,7 +261,6 @@
             font-size: 1.5rem; margin-bottom: 30px; font-family: 'Fredoka One'; text-align: center; outline: none;
         }
 
-        /* --- TOAST --- */
         #toast {
             position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: var(--dark); color: white; padding: 20px 50px; border-radius: 60px;
@@ -315,15 +275,14 @@
 <body>
 
     <!-- VIDEO BACKGROUND -->
-    <!-- Make sure you upload a file named 'video.mp4' to your GitHub repo! -->
+    <!-- Using your GitHub file directly via raw.githubusercontent.com -->
     <video id="bg-video" autoplay muted loop playsinline>
-        <source src="video.mp4" type="video/mp4">
+        <source src="https://raw.githubusercontent.com/dkruban/LB_App/main/video.mp4" type="video/mp4">
     </video>
     <div class="video-overlay"></div>
 
     <div id="toast">Action!</div>
 
-    <!-- Settings Button -->
     <div class="settings-fab" onclick="toggleSettings()">⚙️</div>
 
     <!-- INTRO -->
@@ -337,7 +296,7 @@
     <div id="app">
         <div class="toolbar">
             <button class="btn-tool btn-add" onclick="openAddModal()">+ Add Fighter</button>
-            <button class="btn-tool btn-refresh" onclick="fetchGitHubData()">🔄 Sync Cloud</button>
+            <button class="btn-tool btn-refresh" onclick="fetchGitHubData(true)">🔄 Sync Cloud</button>
             <button class="btn-tool btn-new-game" onclick="newGame()">🎮 New Game</button>
         </div>
 
@@ -353,7 +312,7 @@
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; margin-bottom: 20px;">Settings</h2>
             <div style="display:flex; justify-content:center; gap:10px;">
-                <label style="font-family:'Fredoka One'; font-size:1.2rem;">🔊 Sound</label>
+                <label style="font-family:'Fredoka One'; font-size:1.2rem;">🔊 Sound FX</label>
                 <input type="checkbox" id="sound-toggle" checked style="width:auto; margin:0;">
             </div>
             <br>
@@ -391,10 +350,12 @@
         // ==========================================
         const GITHUB_OWNER = "dkruban";
         const GITHUB_REPO = "LB_App";
-        const GITHUB_TOKEN = "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";
         const DATA_FILE = "data.json";
+        
+        // USER PROVIDED TOKEN
+        const GITHUB_TOKEN = "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"; 
+        
         let API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-
         let players = [];
         let editingScoreId = null;
         let currentFileSHA = null;
@@ -450,40 +411,88 @@
         }
 
         // ==========================================
-        // 2. GITHUB LOGIC
+        // 2. DATA HANDLING
         // ==========================================
+        
+        // Load Local Data first for instant UI
+        function loadLocalData() {
+            const saved = localStorage.getItem('juniorFiestaData');
+            if (saved) {
+                try { players = JSON.parse(saved); } catch(e) {}
+            }
+        }
+
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
-        function fetchGitHubData() {
-            API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-            showToast("Syncing...");
-            fetch(API_URL)
-                .then(r => r.ok ? r.json() : Promise.reject("Not Found"))
-                .then(data => {
+        function saveLocalData() {
+            localStorage.setItem('juniorFiestaData', JSON.stringify(players));
+            renderApp();
+        }
+
+        function fetchGitHubData(manualSync = false) {
+            if(manualSync) showToast("🔄 Syncing with Cloud...");
+            
+            fetch(API_URL, {
+                headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+            })
+            .then(r => {
+                if (r.ok) return r.json();
+                if (r.status === 404) {
+                    if(manualSync) showToast("☁️ No cloud data found.");
+                    return null;
+                }
+                throw new Error("Fetch Failed");
+            })
+            .then(data => {
+                if (data) {
                     currentFileSHA = data.sha;
                     try {
                         players = JSON.parse(b64_to_utf8(data.content));
-                        renderApp();
-                        showToast("Synced!");
-                    } catch(e) { showToast("Data Error"); }
-                })
-                .catch(() => { showToast("No Data Found"); players=[]; renderApp(); });
+                        saveLocalData(); // Update local backup
+                        if(manualSync) showToast("☁️ Synced Successfully!");
+                    } catch(e) { showToast("⚠️ Corrupt Cloud Data"); }
+                } else {
+                    // File doesn't exist, use local data or empty
+                    loadLocalData();
+                }
+                renderApp();
+            })
+            .catch(err => {
+                if(manualSync) showToast("❌ Sync Failed (Network/Token?)");
+                console.error(err);
+                loadLocalData(); // Fallback to local
+                renderApp();
+            });
         }
 
         function pushGitHubData() {
-            API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-            const body = { message: "Update scores", content: utf8_to_b64(JSON.stringify(players)) };
+            // 1. Update UI instantly
+            saveLocalData();
+
+            // 2. Push to GitHub in background
+            const body = { 
+                message: "Update scores via Junior Fiesta", 
+                content: utf8_to_b64(JSON.stringify(players)) 
+            };
+            
             if (currentFileSHA) body.sha = currentFileSHA;
             
             fetch(API_URL, {
                 method: 'PUT',
-                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             })
-            .then(r => r.ok ? r.json() : Promise.reject("Save Failed"))
-            .then(data => { currentFileSHA = data.content.sha; showToast("Saved!"); playSound('win'); })
-            .catch(e => alert("Error saving: " + e));
+            .then(r => {
+                if(r.ok) return r.json();
+                // If conflict, refetch SHA and try again (simplified here)
+                if(r.status === 409) fetchGitHubData(); 
+                throw new Error("Save Failed");
+            })
+            .then(data => { 
+                currentFileSHA = data.content.sha; 
+            })
+            .catch(e => console.log("Cloud save failed (using local storage):", e));
         }
 
         // ==========================================
@@ -494,13 +503,13 @@
             document.getElementById('intro-screen').classList.add('slide-up');
             document.getElementById('app').style.display = 'block';
             
-            // Play video explicitly
             const video = document.getElementById('bg-video');
-            video.play().catch(e => console.log("Autoplay blocked, needs interaction"));
+            video.play().catch(e => console.log("Autoplay blocked"));
 
             setTimeout(() => {
                 document.getElementById('app').classList.add('visible');
-                fetchGitHubData();
+                loadLocalData();
+                fetchGitHubData(); // Auto-fetch cloud data on start
             }, 100);
         }
 
@@ -517,10 +526,12 @@
         function renderPodium() {
             const container = document.getElementById('podium-container');
             container.innerHTML = '';
+            // array indices: 0 is 1st, 1 is 2nd, 2 is 3rd
+            // display order: 2nd, 1st, 3rd
             let top3 = [players[1], players[0], players[2]].filter(p => p !== undefined);
 
             if (players.length === 0) {
-                container.innerHTML = '<p style="color:white; font-family:"Fredoka One"; text-align:center; font-size:1.5rem;">No fighters yet!</p>';
+                container.innerHTML = '<p style="color:white; font-family:"Fredoka One"; text-align:center; font-size:1.5rem; padding-top:100px;">No fighters yet!</p>';
                 return;
             }
 
@@ -532,8 +543,8 @@
                     <div class="crown-icon">👑</div>
                     <img src="${getAvatar(p.name)}" class="avatar-xl">
                     <div class="podium-body">
-                        <div class="podium-name">${p.name}</div>
-                        <div class="podium-score">${p.score}</div>
+                        <div class="podium-name" style="font-weight:900; font-size:1.5rem;">${p.name}</div>
+                        <div class="podium-score" style="font-size:2rem; font-weight:900;">${p.score}</div>
                     </div>
                 `;
                 container.appendChild(el);
@@ -543,7 +554,7 @@
         function renderList() {
             const list = document.getElementById('player-list');
             list.innerHTML = '';
-            if (players.length === 0) return list.innerHTML = '<p style="text-align:center; color:white; font-family: Fredoka One;">Empty Ring!</p>';
+            if (players.length === 0) return list.innerHTML = '<p style="text-align:center; color:white; font-family: Fredoka One; padding: 20px;">Empty Ring! Add a Fighter.</p>';
 
             players.forEach((p, index) => {
                 const row = document.createElement('div');
@@ -574,7 +585,6 @@
             const rect = event.target.getBoundingClientRect();
             showComicEffect(rect.left, rect.top, delta > 0 ? "POW!" : "BAM!");
             
-            renderApp();
             pushGitHubData();
         }
 
@@ -589,22 +599,32 @@
         }
 
         function deletePlayer(index) {
-            if(confirm('Knock out?')) { playSound('pop'); players.splice(index,1); renderApp(); pushGitHubData(); }
+            if(confirm('Knock out this fighter?')) { 
+                playSound('pop'); 
+                players.splice(index,1); 
+                pushGitHubData(); 
+            }
         }
         function newGame() {
-            if(confirm("New Season?")) { playSound('win'); players.forEach(p=>p.score=0); renderApp(); pushGitHubData(); }
+            if(confirm("New Season? Reset all scores to 0?")) { 
+                playSound('win'); 
+                players.forEach(p=>p.score=0); 
+                pushGitHubData(); 
+            }
         }
 
         function openAddModal() {
             playSound('pop');
             document.getElementById('player-name-input').value = ''; 
             document.getElementById('name-modal').classList.add('active');
+            document.getElementById('player-name-input').focus();
         }
         function openScoreModal(i) {
             playSound('pop');
             editingScoreId = i;
             document.getElementById('score-input').value = players[i].score;
             document.getElementById('score-modal').classList.add('active');
+            document.getElementById('score-input').focus();
         }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
@@ -612,13 +632,18 @@
             const name = document.getElementById('player-name-input').value.trim();
             if(!name) return showToast("Name required!");
             players.push({ id: Date.now(), name: name, score: 0 });
-            closeModal('name-modal'); renderApp(); pushGitHubData(); playSound('win');
+            closeModal('name-modal'); 
+            pushGitHubData(); 
+            playSound('win');
+            showToast("Fighter Added!");
         }
         function saveScoreManual() {
             const val = parseInt(document.getElementById('score-input').value);
             if(!isNaN(val) && editingScoreId !== null) {
                 players[editingScoreId].score = val;
-                closeModal('score-modal'); renderApp(); pushGitHubData(); playSound('win');
+                closeModal('score-modal'); 
+                pushGitHubData(); 
+                playSound('win');
             }
         }
 
