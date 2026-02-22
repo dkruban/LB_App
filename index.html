@@ -24,7 +24,7 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #2c3e50; /* Fallback color if video fails */
+            background-color: #2c3e50; /* Fallback color */
             min-height: 100vh;
             color: var(--dark);
             overflow-x: hidden;
@@ -41,17 +41,16 @@
             height: 100%;
             object-fit: cover;
             z-index: -2;
-            background-color: #2c3e50; /* Ensure not pitch black if missing */
+            background-color: #2c3e50;
         }
 
-        /* Dark overlay to make text readable over video */
         .video-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6); /* Darkens video */
+            background: rgba(0, 0, 0, 0.6);
             z-index: -1;
             backdrop-filter: blur(5px);
         }
@@ -59,7 +58,7 @@
         /* --- INTRO SCREEN --- */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Darker intro */
+            background: rgba(0, 0, 0, 0.85);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 2000; transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
@@ -67,11 +66,11 @@
 
         /* BLAST ANIMATION STYLE */
         .blast-title {
-            font-family: 'Bangers', cursive; /* Fun cartoon font */
-            font-size: clamp(4rem, 10vw, 8rem); /* Huge responsive text */
+            font-family: 'Bangers', cursive;
+            font-size: clamp(4rem, 10vw, 8rem);
             font-weight: 900;
             text-transform: uppercase;
-            text-align: center; /* Centered text */
+            text-align: center;
             line-height: 1.1;
             
             /* Pink to Red Gradient Text */
@@ -83,12 +82,10 @@
             /* Premium Glow */
             filter: drop-shadow(0 0 30px rgba(255, 71, 87, 0.6));
             
-            /* Initial State */
             opacity: 0; 
             white-space: nowrap;
         }
 
-        /* The Animation: Slide Left + Blast/Explode */
         @keyframes blastSlideLeft {
             0% { 
                 transform: translateX(-150vw) scale(0.1) rotate(-10deg); 
@@ -96,16 +93,16 @@
                 filter: blur(20px);
             }
             50% { 
-                transform: translateX(5vw) scale(1.6) rotate(5deg); /* Blast effect */
+                transform: translateX(5vw) scale(1.6) rotate(5deg);
                 opacity: 1; 
                 filter: blur(0px);
             }
             70% { 
-                transform: translateX(-10px) scale(0.95); /* Recoil/Spread */
+                transform: translateX(-10px) scale(0.95);
                 opacity: 1;
             }
             100% { 
-                transform: translateX(0) scale(1) rotate(0deg); /* Settle in center */
+                transform: translateX(0) scale(1) rotate(0deg); 
                 opacity: 1; 
             }
         }
@@ -114,7 +111,6 @@
             animation: blastSlideLeft 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* Start Button */
         .btn-main-start {
             padding: 30px 80px; font-size: 2.5rem;
             font-family: 'Fredoka One', cursive;
@@ -122,8 +118,8 @@
             color: white; border: none; border-radius: 60px;
             box-shadow: 0 15px 0 #c0392b, 0 25px 30px rgba(0,0,0,0.4);
             cursor: pointer; margin-top: 80px;
-            transition: all 0.2s; opacity: 0; /* Hidden initially */
-            animation: fadeInBtn 0.5s ease 2s forwards; /* Fade in after animation */
+            transition: all 0.2s; opacity: 0; 
+            animation: fadeInBtn 0.5s ease 2s forwards; 
             position: relative; overflow: hidden;
             border: 4px solid white;
         }
@@ -131,7 +127,6 @@
         
         @keyframes fadeInBtn { to { opacity: 1; } }
 
-        /* --- SETTINGS BUTTON --- */
         .settings-fab {
             position: fixed; top: 20px; right: 20px; width: 60px; height: 60px;
             background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
@@ -142,7 +137,6 @@
         }
         .settings-fab:hover { transform: rotate(90deg) scale(1.1); background: rgba(255,255,255,0.4); }
 
-        /* --- APP CONTAINER --- */
         #app { 
             max-width: 1000px; margin: 0 auto; padding: 20px; 
             display: none; opacity: 0; transition: opacity 1s; 
@@ -150,7 +144,6 @@
         }
         #app.visible { display: block; opacity: 1; }
 
-        /* --- TOOLBAR --- */
         .toolbar {
             display: flex; justify-content: center; flex-wrap: wrap; gap: 15px;
             margin-bottom: 40px; 
@@ -170,7 +163,6 @@
         .btn-refresh { background: linear-gradient(135deg, var(--accent), #f9ca24); }
         .btn-new-game { background: linear-gradient(135deg, var(--primary), #c0392b); }
 
-        /* --- PODIUM (PREMIUM) --- */
         .section-title {
             text-align: center; font-family: 'Bangers', cursive; color: white;
             font-size: 4rem; text-shadow: 5px 5px 0 var(--primary), -2px -2px 0 #000; 
@@ -206,7 +198,7 @@
             padding-top: 80px; position: relative; overflow: hidden;
             box-shadow: inset 0 20px 30px rgba(255,255,255,0.2), 0 30px 50px rgba(0,0,0,0.5);
             border: 4px solid rgba(255,255,255,0.3);
-            background-size: 200% 200%; /* For gradient animation */
+            background-size: 200% 200%; 
             animation: bgFlow 5s infinite alternate;
         }
         
@@ -216,7 +208,6 @@
         .podium-2 { order: 1; z-index: 5; } .podium-2 .podium-body { height: 230px; background: linear-gradient(180deg, #dfe6e9, #b2bec3); }
         .podium-3 { order: 3; z-index: 4; } .podium-3 .podium-body { height: 180px; background: linear-gradient(180deg, #e17055, #d63031); }
 
-        /* --- LIST --- */
         .list-container { padding: 20px; position: relative; }
         .list-row {
             display: flex; align-items: center; 
@@ -253,7 +244,6 @@
         .btn-minus { background: var(--primary); }
         .btn-del { background: #a4b0be; font-size: 1.4rem; width: 45px; height: 45px;}
 
-        /* --- COMIC EFFECTS --- */
         .comic-text {
             position: absolute; font-family: 'Bangers', cursive;
             font-size: 5rem; color: #ff4757; 
@@ -263,7 +253,6 @@
         }
         @keyframes comicPop { 0% { transform: scale(0) rotate(-30deg); opacity: 0; } 50% { transform: scale(1.5) rotate(10deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 0; } }
 
-        /* --- MODALS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
@@ -281,7 +270,6 @@
             font-size: 1.5rem; margin-bottom: 30px; font-family: 'Fredoka One'; text-align: center; outline: none;
         }
 
-        /* --- TOAST --- */
         #toast {
             position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: var(--dark); color: white; padding: 20px 50px; border-radius: 60px;
@@ -295,27 +283,19 @@
 </head>
 <body>
 
-    <!-- VIDEO BACKGROUND -->
-    <!-- Make sure you upload a file named 'video.mp4' to your GitHub repo! -->
     <video id="bg-video" autoplay muted loop playsinline>
         <source src="video.mp4" type="video/mp4">
     </video>
     <div class="video-overlay"></div>
 
     <div id="toast">Action!</div>
-
-    <!-- Settings Button -->
     <div class="settings-fab" onclick="toggleSettings()">⚙️</div>
 
-    <!-- INTRO -->
     <div id="intro-screen">
-        <!-- The Main Title with Blast Animation -->
         <h1 class="blast-title" id="main-title">FEASTA JUNIOR 42</h1>
-        
         <button class="btn-main-start" id="start-btn" onclick="startApp()">START BATTLE!</button>
     </div>
 
-    <!-- APP -->
     <div id="app">
         <div class="toolbar">
             <button class="btn-tool btn-add" onclick="openAddModal()">+ Add Fighter</button>
@@ -330,7 +310,6 @@
         <div class="list-container" id="player-list"></div>
     </div>
 
-    <!-- SETTINGS MODAL -->
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; margin-bottom: 20px;">Settings</h2>
@@ -343,7 +322,6 @@
         </div>
     </div>
 
-    <!-- ADD PLAYER MODAL -->
     <div class="modal-overlay" id="name-modal">
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; color: var(--primary); margin-bottom:10px;">New Fighter</h2>
@@ -355,7 +333,6 @@
         </div>
     </div>
 
-    <!-- SCORE EDIT MODAL -->
     <div class="modal-overlay" id="score-modal">
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; color: var(--accent); margin-bottom:10px;">Update Power</h2>
@@ -371,17 +348,20 @@
         // ==========================================
         // 1. CONFIG & STATE
         // ==========================================
+        
+        // ⚠️ IMPORTANT: YOU MUST CHANGE THESE TO YOUR GITHUB DETAILS
         const GITHUB_OWNER = "YOUR_USERNAME_HERE";
         const GITHUB_REPO = "YOUR_REPO_NAME_HERE";
         const GITHUB_TOKEN = "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";
         const DATA_FILE = "data.json";
+        
+        // Dynamic URL construction
         let API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
 
         let players = [];
         let editingScoreId = null;
         let currentFileSHA = null;
 
-        // --- AUDIO ENGINE ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         function playSound(type) {
@@ -432,53 +412,105 @@
         }
 
         // ==========================================
-        // 2. GITHUB LOGIC
+        // 2. IMPROVED GITHUB LOGIC (ROBUST SAVE)
         // ==========================================
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
-        function fetchGitHubData() {
+        async function fetchGitHubData() {
             API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
             showToast("Syncing...");
-            fetch(API_URL)
-                .then(r => r.ok ? r.json() : Promise.reject("Not Found"))
-                .then(data => {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    const data = await response.json();
                     currentFileSHA = data.sha;
                     try {
                         players = JSON.parse(b64_to_utf8(data.content));
                         renderApp();
                         showToast("Synced!");
                     } catch(e) { showToast("Data Error"); }
-                })
-                .catch(() => { showToast("No Data Found"); players=[]; renderApp(); });
+                } else {
+                    showToast("No Data Found");
+                    players = [];
+                    renderApp();
+                }
+            } catch (error) {
+                showToast("Sync Error");
+                console.error(error);
+            }
         }
 
-        function pushGitHubData() {
+        async function pushGitHubData() {
+            // --- SECURITY CHECK ---
+            if (GITHUB_OWNER === "YOUR_USERNAME_HERE" || GITHUB_REPO === "YOUR_REPO_NAME_HERE") {
+                alert("⚠️ ERROR: Please edit the code and replace 'YOUR_USERNAME_HERE' and 'YOUR_REPO_NAME_HERE' with your actual GitHub details!");
+                return;
+            }
+
+            // --- 1. GET LATEST SHA BEFORE SAVING (Prevents SHA Mismatch) ---
+            showToast("Saving...");
             API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-            const body = { message: "Update scores", content: utf8_to_b64(JSON.stringify(players)) };
-            if (currentFileSHA) body.sha = currentFileSHA;
-            
-            fetch(API_URL, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            })
-            .then(r => r.ok ? r.json() : Promise.reject("Save Failed"))
-            .then(data => { currentFileSHA = data.content.sha; showToast("Saved!"); playSound('win'); })
-            .catch(e => alert("Error saving: " + e));
+
+            try {
+                // Check if file exists to get latest SHA
+                const getResponse = await fetch(API_URL);
+                if (getResponse.ok) {
+                    const data = await getResponse.json();
+                    currentFileSHA = data.sha; // Update SHA to latest version
+                } else if (getResponse.status === 404) {
+                    currentFileSHA = null; // File does not exist yet
+                } else {
+                    throw new Error(`Fetch Failed (${getResponse.status}): Check your Repo/Username.`);
+                }
+
+                // --- 2. PREPARE PAYLOAD ---
+                const contentBase64 = utf8_to_b64(JSON.stringify(players));
+                const body = {
+                    message: "Update scores via Junior Fiesta",
+                    content: contentBase64
+                };
+
+                // Only include SHA if file exists
+                if (currentFileSHA) {
+                    body.sha = currentFileSHA;
+                }
+
+                // --- 3. SEND PUT REQUEST ---
+                const putResponse = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: { 
+                        'Authorization': `token ${GITHUB_TOKEN}`, 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                // --- 4. HANDLE RESPONSE ---
+                if (putResponse.ok) {
+                    const data = await putResponse.json();
+                    currentFileSHA = data.content.sha; // Save new SHA
+                    showToast("Saved!");
+                    playSound('win');
+                } else {
+                    const errorData = await putResponse.json();
+                    // Show detailed error to user
+                    console.error("GitHub Save Error:", errorData);
+                    alert(`Save Failed: ${errorData.message}`);
+                }
+
+            } catch (error) {
+                console.error("Critical Error:", error);
+                alert(`Error: ${error.message}`);
+            }
         }
 
         // ==========================================
-        //3. UI LOGIC
+        // 3. UI LOGIC
         // ==========================================
-        
-        // --- AUTO START INTRO SEQUENCE ---
         window.onload = function() {
-            // 1. Trigger the text blast animation automatically
             const title = document.getElementById('main-title');
             if(title) title.classList.add('blast-active');
-
-            // 2. Show the start button after the text appears
             setTimeout(() => {
                 const btn = document.getElementById('start-btn');
                 if(btn) btn.style.opacity = '1';
@@ -490,7 +522,6 @@
             document.getElementById('intro-screen').classList.add('slide-up');
             document.getElementById('app').style.display = 'block';
             
-            // Play video explicitly
             const video = document.getElementById('bg-video');
             video.play().catch(e => console.log("Autoplay blocked, needs interaction"));
 
@@ -566,7 +597,6 @@
             playSound('hit');
             players[index].score += delta;
             
-            // Comic Effect
             const rect = event.target.getBoundingClientRect();
             showComicEffect(rect.left, rect.top, delta > 0 ? "POW!" : "BAM!");
             
