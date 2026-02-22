@@ -14,6 +14,7 @@
             --gold: #FFD700;
             --glass: rgba(255, 255, 255, 0.15);
             --glass-border: rgba(255, 255, 255, 0.3);
+            --text-shad: 0 4px 0 rgba(0,0,0,0.2);
         }
 
         * { 
@@ -23,7 +24,7 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #2c3e50; 
+            background-color: #2c3e50; /* Fallback color if video fails */
             min-height: 100vh;
             color: var(--dark);
             overflow-x: hidden;
@@ -40,15 +41,17 @@
             height: 100%;
             object-fit: cover;
             z-index: -2;
+            background-color: #2c3e50; /* Ensure not pitch black if missing */
         }
 
+        /* Dark overlay to make text readable over video */
         .video-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6); 
+            background: rgba(0, 0, 0, 0.6); /* Darkens video */
             z-index: -1;
             backdrop-filter: blur(5px);
         }
@@ -56,68 +59,79 @@
         /* --- INTRO SCREEN --- */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.85); /* Darker intro */
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 2000; transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
         #intro-screen.slide-up { transform: translateY(-100%); pointer-events: none; }
 
-        .title-big {
-            font-family: 'Fredoka One', cursive;
-            font-size: clamp(3rem, 12vw, 8rem);
+        /* BLAST ANIMATION STYLE */
+        .blast-title {
+            font-family: 'Bangers', cursive; /* Fun cartoon font */
+            font-size: clamp(4rem, 10vw, 8rem); /* Huge responsive text */
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            text-align: center; /* Centered text */
             line-height: 1.1;
+            
+            /* Pink to Red Gradient Text */
             background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 45%, #ff4757 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+            
+            /* Premium Glow */
             filter: drop-shadow(0 0 30px rgba(255, 71, 87, 0.6));
+            
+            /* Initial State */
             opacity: 0; 
             white-space: nowrap;
         }
 
-        @keyframes slideInPremium {
-            0% { transform: translateX(-100vw) rotate(-5deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateX(0) rotate(0deg); opacity: 1; }
-        }
-        .title-animating { animation: slideInPremium 3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-
-        .subtitle {
-            font-family: 'Bangers', cursive;
-            font-size: 5rem;
-            color: var(--gold);
-            margin-top: -20px;
-            margin-bottom: 60px;
-            opacity: 0;
-            text-shadow: 4px 4px 0 #000, 0 0 20px rgba(255, 215, 0, 0.8);
-            animation: blastIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.5s forwards;
-        }
-
-        @keyframes blastIn {
-            0% { transform: scale(5) rotate(15deg); opacity: 0; filter: blur(20px); }
-            50% { transform: scale(0.8) rotate(-10deg); opacity: 1; filter: blur(0px); }
-            70% { transform: scale(1.1); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        /* The Animation: Slide Left + Blast/Explode */
+        @keyframes blastSlideLeft {
+            0% { 
+                transform: translateX(-150vw) scale(0.1) rotate(-10deg); 
+                opacity: 0; 
+                filter: blur(20px);
+            }
+            50% { 
+                transform: translateX(5vw) scale(1.6) rotate(5deg); /* Blast effect */
+                opacity: 1; 
+                filter: blur(0px);
+            }
+            70% { 
+                transform: translateX(-10px) scale(0.95); /* Recoil/Spread */
+                opacity: 1;
+            }
+            100% { 
+                transform: translateX(0) scale(1) rotate(0deg); /* Settle in center */
+                opacity: 1; 
+            }
         }
 
+        .blast-active {
+            animation: blastSlideLeft 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* Start Button */
         .btn-main-start {
             padding: 30px 80px; font-size: 2.5rem;
             font-family: 'Fredoka One', cursive;
             background: linear-gradient(45deg, #ff4757, #ff6b81);
             color: white; border: none; border-radius: 60px;
             box-shadow: 0 15px 0 #c0392b, 0 25px 30px rgba(0,0,0,0.4);
-            cursor: pointer; margin-top: 50px;
-            transition: all 0.2s; opacity: 0; 
-            animation: fadeIn 1s ease 3s forwards;
+            cursor: pointer; margin-top: 80px;
+            transition: all 0.2s; opacity: 0; /* Hidden initially */
+            animation: fadeInBtn 0.5s ease 2s forwards; /* Fade in after animation */
             position: relative; overflow: hidden;
             border: 4px solid white;
         }
         .btn-main-start:active { transform: translateY(20px); box-shadow: 0 0 0 #c0392b; }
-        @keyframes fadeIn { to { opacity: 1; } }
+        
+        @keyframes fadeInBtn { to { opacity: 1; } }
 
+        /* --- SETTINGS BUTTON --- */
         .settings-fab {
             position: fixed; top: 20px; right: 20px; width: 60px; height: 60px;
             background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
@@ -128,6 +142,7 @@
         }
         .settings-fab:hover { transform: rotate(90deg) scale(1.1); background: rgba(255,255,255,0.4); }
 
+        /* --- APP CONTAINER --- */
         #app { 
             max-width: 1000px; margin: 0 auto; padding: 20px; 
             display: none; opacity: 0; transition: opacity 1s; 
@@ -135,6 +150,7 @@
         }
         #app.visible { display: block; opacity: 1; }
 
+        /* --- TOOLBAR --- */
         .toolbar {
             display: flex; justify-content: center; flex-wrap: wrap; gap: 15px;
             margin-bottom: 40px; 
@@ -154,6 +170,7 @@
         .btn-refresh { background: linear-gradient(135deg, var(--accent), #f9ca24); }
         .btn-new-game { background: linear-gradient(135deg, var(--primary), #c0392b); }
 
+        /* --- PODIUM (PREMIUM) --- */
         .section-title {
             text-align: center; font-family: 'Bangers', cursive; color: white;
             font-size: 4rem; text-shadow: 5px 5px 0 var(--primary), -2px -2px 0 #000; 
@@ -189,7 +206,7 @@
             padding-top: 80px; position: relative; overflow: hidden;
             box-shadow: inset 0 20px 30px rgba(255,255,255,0.2), 0 30px 50px rgba(0,0,0,0.5);
             border: 4px solid rgba(255,255,255,0.3);
-            background-size: 200% 200%;
+            background-size: 200% 200%; /* For gradient animation */
             animation: bgFlow 5s infinite alternate;
         }
         
@@ -199,6 +216,7 @@
         .podium-2 { order: 1; z-index: 5; } .podium-2 .podium-body { height: 230px; background: linear-gradient(180deg, #dfe6e9, #b2bec3); }
         .podium-3 { order: 3; z-index: 4; } .podium-3 .podium-body { height: 180px; background: linear-gradient(180deg, #e17055, #d63031); }
 
+        /* --- LIST --- */
         .list-container { padding: 20px; position: relative; }
         .list-row {
             display: flex; align-items: center; 
@@ -235,6 +253,7 @@
         .btn-minus { background: var(--primary); }
         .btn-del { background: #a4b0be; font-size: 1.4rem; width: 45px; height: 45px;}
 
+        /* --- COMIC EFFECTS --- */
         .comic-text {
             position: absolute; font-family: 'Bangers', cursive;
             font-size: 5rem; color: #ff4757; 
@@ -244,6 +263,7 @@
         }
         @keyframes comicPop { 0% { transform: scale(0) rotate(-30deg); opacity: 0; } 50% { transform: scale(1.5) rotate(10deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 0; } }
 
+        /* --- MODALS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
@@ -261,6 +281,7 @@
             font-size: 1.5rem; margin-bottom: 30px; font-family: 'Fredoka One'; text-align: center; outline: none;
         }
 
+        /* --- TOAST --- */
         #toast {
             position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: var(--dark); color: white; padding: 20px 50px; border-radius: 60px;
@@ -275,27 +296,30 @@
 <body>
 
     <!-- VIDEO BACKGROUND -->
+    <!-- Make sure you upload a file named 'video.mp4' to your GitHub repo! -->
     <video id="bg-video" autoplay muted loop playsinline>
-        <source src="https://raw.githubusercontent.com/dkruban/LB_App/main/video.mp4" type="video/mp4">
+        <source src="video.mp4" type="video/mp4">
     </video>
     <div class="video-overlay"></div>
 
     <div id="toast">Action!</div>
 
+    <!-- Settings Button -->
     <div class="settings-fab" onclick="toggleSettings()">⚙️</div>
 
     <!-- INTRO -->
     <div id="intro-screen">
-        <h1 class="title-big" id="main-title">JUNIOR<br>FIESTA<br><span style="font-size: 0.4em; color: white; -webkit-text-fill-color: white; text-shadow: none;">42</span></h1>
-        <div class="subtitle">FEASTA JUNIOR 42</div>
-        <button class="btn-main-start" onclick="startApp()">LET'S START</button>
+        <!-- The Main Title with Blast Animation -->
+        <h1 class="blast-title" id="main-title">FEASTA JUNIOR 42</h1>
+        
+        <button class="btn-main-start" id="start-btn" onclick="startApp()">START BATTLE!</button>
     </div>
 
     <!-- APP -->
     <div id="app">
         <div class="toolbar">
             <button class="btn-tool btn-add" onclick="openAddModal()">+ Add Fighter</button>
-            <button class="btn-tool btn-refresh" onclick="fetchGitHubData(true)">🔄 Sync Cloud</button>
+            <button class="btn-tool btn-refresh" onclick="fetchGitHubData()">🔄 Sync Cloud</button>
             <button class="btn-tool btn-new-game" onclick="newGame()">🎮 New Game</button>
         </div>
 
@@ -311,7 +335,7 @@
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; margin-bottom: 20px;">Settings</h2>
             <div style="display:flex; justify-content:center; gap:10px;">
-                <label style="font-family:'Fredoka One'; font-size:1.2rem;">🔊 Sound FX</label>
+                <label style="font-family:'Fredoka One'; font-size:1.2rem;">🔊 Sound</label>
                 <input type="checkbox" id="sound-toggle" checked style="width:auto; margin:0;">
             </div>
             <br>
@@ -347,14 +371,12 @@
         // ==========================================
         // 1. CONFIG & STATE
         // ==========================================
-        const GITHUB_OWNER = "dkruban";
-        const GITHUB_REPO = "LB_App";
+        const GITHUB_OWNER = "YOUR_USERNAME_HERE";
+        const GITHUB_REPO = "YOUR_REPO_NAME_HERE";
+        const GITHUB_TOKEN = "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";
         const DATA_FILE = "data.json";
-        
-        // USER PROVIDED TOKEN
-        const GITHUB_TOKEN = "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"; 
-        
         let API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+
         let players = [];
         let editingScoreId = null;
         let currentFileSHA = null;
@@ -410,115 +432,71 @@
         }
 
         // ==========================================
-        // 2. DATA HANDLING (No LocalStorage)
+        // 2. GITHUB LOGIC
         // ==========================================
-        
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
-        function fetchGitHubData(manualSync = false) {
-            if(manualSync) showToast("🔄 Syncing with Cloud...");
-            
-            fetch(API_URL, {
-                headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
-            })
-            .then(r => {
-                if (r.ok) return r.json();
-                if (r.status === 404) {
-                    if(manualSync) showToast("☁️ No cloud data found.");
-                    return null;
-                }
-                throw new Error("Fetch Failed");
-            })
-            .then(data => {
-                if (data) {
+        function fetchGitHubData() {
+            API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+            showToast("Syncing...");
+            fetch(API_URL)
+                .then(r => r.ok ? r.json() : Promise.reject("Not Found"))
+                .then(data => {
                     currentFileSHA = data.sha;
                     try {
                         players = JSON.parse(b64_to_utf8(data.content));
-                        if(manualSync) showToast("☁️ Synced Successfully!");
-                    } catch(e) { showToast("⚠️ Corrupt Cloud Data"); }
-                } else {
-                    // If no cloud data, players remains empty (no persistence)
-                    players = [];
-                }
-                renderApp();
-            })
-            .catch(err => {
-                if(manualSync) showToast("❌ Sync Failed (Network/Token?)");
-                console.error(err);
-                // On error, do not load old data. Start fresh.
-                players = [];
-                renderApp();
-            });
+                        renderApp();
+                        showToast("Synced!");
+                    } catch(e) { showToast("Data Error"); }
+                })
+                .catch(() => { showToast("No Data Found"); players=[]; renderApp(); });
         }
 
         function pushGitHubData() {
-            // 1. Prepare Data
-            const body = { 
-                message: "Update scores via Junior Fiesta", 
-                content: utf8_to_b64(JSON.stringify(players)) 
-            };
-            
+            API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+            const body = { message: "Update scores", content: utf8_to_b64(JSON.stringify(players)) };
             if (currentFileSHA) body.sha = currentFileSHA;
             
-            // 2. Attempt Push
             fetch(API_URL, {
                 method: 'PUT',
-                headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             })
-            .then(async r => {
-                if (r.ok) return r.json();
-
-                // --- SMART RETRY LOGIC ---
-                if (r.status === 409) {
-                    console.log("Conflict detected. Updating SHA and retrying...");
-                    try {
-                        const data = await fetch(API_URL, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN } }).then(res => res.json());
-                        currentFileSHA = data.sha;
-                        body.sha = currentFileSHA;
-
-                        const retry = await fetch(API_URL, {
-                            method: 'PUT',
-                            headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
-                            body: JSON.stringify(body)
-                        });
-
-                        if (!retry.ok) throw new Error("Retry Failed");
-                        return retry.json();
-
-                    } catch (retryError) {
-                        throw new Error("Conflict & Retry Failed.");
-                    }
-                }
-
-                const errorText = await r.text();
-                throw new Error(`HTTP ${r.status}: ${errorText}`);
-            })
-            .then(data => { 
-                currentFileSHA = data.content.sha; 
-            })
-            .catch(e => {
-                console.error("Cloud save failed:", e);
-                alert("Error saving to GitHub: " + e.message);
-            });
+            .then(r => r.ok ? r.json() : Promise.reject("Save Failed"))
+            .then(data => { currentFileSHA = data.content.sha; showToast("Saved!"); playSound('win'); })
+            .catch(e => alert("Error saving: " + e));
         }
 
         // ==========================================
-        // 3. UI LOGIC
+        //3. UI LOGIC
         // ==========================================
+        
+        // --- AUTO START INTRO SEQUENCE ---
+        window.onload = function() {
+            // 1. Trigger the text blast animation automatically
+            const title = document.getElementById('main-title');
+            if(title) title.classList.add('blast-active');
+
+            // 2. Show the start button after the text appears
+            setTimeout(() => {
+                const btn = document.getElementById('start-btn');
+                if(btn) btn.style.opacity = '1';
+            }, 1500);
+        }
+
         function startApp() {
             playSound('whoosh');
             document.getElementById('intro-screen').classList.add('slide-up');
             document.getElementById('app').style.display = 'block';
             
+            // Play video explicitly
             const video = document.getElementById('bg-video');
-            video.play().catch(e => console.log("Autoplay blocked"));
+            video.play().catch(e => console.log("Autoplay blocked, needs interaction"));
 
             setTimeout(() => {
                 document.getElementById('app').classList.add('visible');
-                // Removed loadLocalData() - Starts empty every time
-                fetchGitHubData(); 
+                fetchGitHubData();
             }, 100);
         }
 
@@ -538,7 +516,7 @@
             let top3 = [players[1], players[0], players[2]].filter(p => p !== undefined);
 
             if (players.length === 0) {
-                container.innerHTML = '<p style="color:white; font-family:"Fredoka One"; text-align:center; font-size:1.5rem; padding-top:100px;">No fighters yet!</p>';
+                container.innerHTML = '<p style="color:white; font-family:"Fredoka One"; text-align:center; font-size:1.5rem;">No fighters yet!</p>';
                 return;
             }
 
@@ -550,8 +528,8 @@
                     <div class="crown-icon">👑</div>
                     <img src="${getAvatar(p.name)}" class="avatar-xl">
                     <div class="podium-body">
-                        <div class="podium-name" style="font-weight:900; font-size:1.5rem;">${p.name}</div>
-                        <div class="podium-score" style="font-size:2rem; font-weight:900;">${p.score}</div>
+                        <div class="podium-name">${p.name}</div>
+                        <div class="podium-score">${p.score}</div>
                     </div>
                 `;
                 container.appendChild(el);
@@ -561,7 +539,7 @@
         function renderList() {
             const list = document.getElementById('player-list');
             list.innerHTML = '';
-            if (players.length === 0) return list.innerHTML = '<p style="text-align:center; color:white; font-family: Fredoka One; padding: 20px;">Empty Ring! Add a Fighter.</p>';
+            if (players.length === 0) return list.innerHTML = '<p style="text-align:center; color:white; font-family: Fredoka One;">Empty Ring!</p>';
 
             players.forEach((p, index) => {
                 const row = document.createElement('div');
@@ -592,8 +570,8 @@
             const rect = event.target.getBoundingClientRect();
             showComicEffect(rect.left, rect.top, delta > 0 ? "POW!" : "BAM!");
             
-            renderApp(); // Update UI
-            pushGitHubData(); // Save to Cloud
+            renderApp();
+            pushGitHubData();
         }
 
         function showComicEffect(x, y, text) {
@@ -607,34 +585,22 @@
         }
 
         function deletePlayer(index) {
-            if(confirm('Knock out this fighter?')) { 
-                playSound('pop'); 
-                players.splice(index,1); 
-                renderApp(); // Update UI
-                pushGitHubData(); // Save to Cloud
-            }
+            if(confirm('Knock out?')) { playSound('pop'); players.splice(index,1); renderApp(); pushGitHubData(); }
         }
         function newGame() {
-            if(confirm("New Season? Reset all scores to 0?")) { 
-                playSound('win'); 
-                players.forEach(p=>p.score=0); 
-                renderApp(); // Update UI
-                pushGitHubData(); // Save to Cloud
-            }
+            if(confirm("New Season?")) { playSound('win'); players.forEach(p=>p.score=0); renderApp(); pushGitHubData(); }
         }
 
         function openAddModal() {
             playSound('pop');
             document.getElementById('player-name-input').value = ''; 
             document.getElementById('name-modal').classList.add('active');
-            document.getElementById('player-name-input').focus();
         }
         function openScoreModal(i) {
             playSound('pop');
             editingScoreId = i;
             document.getElementById('score-input').value = players[i].score;
             document.getElementById('score-modal').classList.add('active');
-            document.getElementById('score-input').focus();
         }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
@@ -642,20 +608,13 @@
             const name = document.getElementById('player-name-input').value.trim();
             if(!name) return showToast("Name required!");
             players.push({ id: Date.now(), name: name, score: 0 });
-            closeModal('name-modal'); 
-            renderApp(); // Update UI
-            pushGitHubData(); // Save to Cloud
-            playSound('win');
-            showToast("Fighter Added!");
+            closeModal('name-modal'); renderApp(); pushGitHubData(); playSound('win');
         }
         function saveScoreManual() {
             const val = parseInt(document.getElementById('score-input').value);
             if(!isNaN(val) && editingScoreId !== null) {
                 players[editingScoreId].score = val;
-                closeModal('score-modal'); 
-                renderApp(); // Update UI
-                pushGitHubData(); // Save to Cloud
-                playSound('win');
+                closeModal('score-modal'); renderApp(); pushGitHubData(); playSound('win');
             }
         }
 
