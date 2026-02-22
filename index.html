@@ -349,10 +349,12 @@
         // 1. CONFIG & STATE
         // ==========================================
         
-        // ⚠️ IMPORTANT: YOU MUST CHANGE THESE TO YOUR GITHUB DETAILS
+        // ⚠️ PASTE YOUR NEW TOKEN HERE
+        // Generate a new one at: https://github.com/settings/tokens
+        // Check the "repo" box!
         const GITHUB_OWNER = "dkruban";
         const GITHUB_REPO = "LD_App";
-        const GITHUB_TOKEN = "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";
+        const GITHUB_TOKEN = "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"; 
         const DATA_FILE = "data.json";
         
         // Dynamic URL construction
@@ -412,7 +414,7 @@
         }
 
         // ==========================================
-        // 2. IMPROVED GITHUB LOGIC (ROBUST SAVE)
+        // 2. FIXED GITHUB LOGIC
         // ==========================================
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
@@ -443,8 +445,8 @@
 
         async function pushGitHubData() {
             // --- SECURITY CHECK ---
-            if (GITHUB_OWNER === "YOUR_USERNAME_HERE" || GITHUB_REPO === "YOUR_REPO_NAME_HERE") {
-                alert("⚠️ ERROR: Please edit the code and replace 'YOUR_USERNAME_HERE' and 'YOUR_REPO_NAME_HERE' with your actual GitHub details!");
+            if (GITHUB_TOKEN === "YOUR_NEW_GITHUB_TOKEN_HERE") {
+                alert("⚠️ ERROR: Please edit the code and replace 'YOUR_NEW_GITHUB_TOKEN_HERE' with your actual new GitHub token!");
                 return;
             }
 
@@ -480,7 +482,8 @@
                 const putResponse = await fetch(API_URL, {
                     method: 'PUT',
                     headers: { 
-                        'Authorization': `token ${GITHUB_TOKEN}`, 
+                        // FIX: Changed 'token' to 'Bearer' for modern GitHub API support
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`, 
                         'Content-Type': 'application/json' 
                     },
                     body: JSON.stringify(body)
@@ -494,7 +497,6 @@
                     playSound('win');
                 } else {
                     const errorData = await putResponse.json();
-                    // Show detailed error to user
                     console.error("GitHub Save Error:", errorData);
                     alert(`Save Failed: ${errorData.message}`);
                 }
