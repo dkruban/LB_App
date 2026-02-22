@@ -253,7 +253,7 @@
 
     <div id="app">
         <div class="toolbar">
-            <input type="text" id="search-input" class="search-box" placeholder="🔍 Search Fighter..." onkeyup="searchPlayer()">
+            <input type="text" id="search-input" class="search-box" placeholder="🔍 Search Player..." onkeyup="searchPlayer()">
             <button class="btn-tool btn-add" onclick="openAddModal()">+ Add</button>
             <button class="btn-tool btn-refresh" onclick="fetchData()">🔄 Sync</button>
             <button class="btn-tool btn-new-game" onclick="newGame()">🎮 New</button>
@@ -282,7 +282,7 @@
     <!-- NAME MODAL -->
     <div class="modal-overlay" id="name-modal">
         <div class="modal-card">
-            <h2 style="font-family: 'Fredoka One'; color: var(--primary); margin-bottom:10px;">New Fighter</h2>
+            <h2 style="font-family: 'Fredoka One'; color: var(--primary); margin-bottom:10px;">New Player</h2>
             <input type="text" id="player-name-input" placeholder="Enter Name..." autocomplete="off">
             <div style="display:flex; justify-content:space-between; gap:15px;">
                 <button class="btn-tool btn-new-game" style="flex:1;" onclick="closeModal('name-modal')">Cancel</button>
@@ -306,7 +306,7 @@
     <!-- EDIT MODAL (NEW) -->
     <div class="modal-overlay" id="edit-modal">
         <div class="modal-card">
-            <h2 style="font-family: 'Fredoka One'; color: #3742fa; margin-bottom:10px;">Edit Fighter</h2>
+            <h2 style="font-family: 'Fredoka One'; color: #3742fa; margin-bottom:10px;">Edit player</h2>
             <input type="text" id="edit-name-input" placeholder="Name..." autocomplete="off">
             <input type="number" id="edit-score-input" placeholder="Score">
             <div style="display:flex; justify-content:space-between; gap:15px;">
@@ -461,7 +461,7 @@
             let top3 = [players[1], players[0], players[2]].filter(p => p !== undefined);
 
             if (players.length === 0) {
-                container.innerHTML = '<p style="color:white; font-family:"Fredoka One"; text-align:center; font-size:1.5rem;">No fighters yet!</p>';
+                container.innerHTML = '<p style="color:white; font-family:"Fredoka One"; text-align:center; font-size:1.5rem;">No Player yet!</p>';
                 return;
             }
 
