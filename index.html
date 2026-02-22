@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Junior Fiesta - 42 Premium</title>
+    <title>Junior Fiesta - College Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -14,7 +14,6 @@
             --gold: #FFD700;
             --glass: rgba(255, 255, 255, 0.15);
             --glass-border: rgba(255, 255, 255, 0.3);
-            --text-shad: 0 4px 0 rgba(0,0,0,0.2);
         }
 
         * { 
@@ -238,14 +237,14 @@
     <div class="settings-fab" onclick="toggleSettings()">⚙️</div>
 
     <div id="intro-screen">
-        <h1 class="blast-title" id="main-title">FEASTA JUNIOR 42</h1>
+        <h1 class="blast-title" id="main-title">FEASTA JUNIOR</h1>
         <button class="btn-main-start" id="start-btn" onclick="startApp()">START BATTLE!</button>
     </div>
 
     <div id="app">
         <div class="toolbar">
             <button class="btn-tool btn-add" onclick="openAddModal()">+ Add Fighter</button>
-            <button class="btn-tool btn-refresh" onclick="fetchGitHubData()">🔄 Sync Cloud</button>
+            <button class="btn-tool btn-refresh" onclick="fetchData()">🔄 Sync Cloud</button>
             <button class="btn-tool btn-new-game" onclick="newGame()">🎮 New Game</button>
         </div>
 
@@ -295,17 +294,11 @@
         // 1. CONFIG & STATE
         // ==========================================
         
-        // ⚠️ WARNING: This token is now public because you posted it in the chat.
-        // Please delete this token from GitHub Settings after you confirm the app works.
-        const GITHUB_OWNER = "dkruban";
-        const GITHUB_REPO = "LD_App";
-        const GITHUB_TOKEN = "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"; 
-        const DATA_FILE = "data.json";
-        
-        let API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+        // YOUR GOOGLE SCRIPT URL IS BELOW:
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4yddWbgT_KNaLINI36LcYNdxHwXPHoCPiR766Ilb94Kiyn64OxNEylycmuLlvlvs6vw/exec";
+
         let players = [];
         let editingScoreId = null;
-        let currentFileSHA = null;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
@@ -351,93 +344,49 @@
         }
 
         // ==========================================
-        // 2. FIXED GITHUB LOGIC
+        // 2. GOOGLE SHEETS LOGIC
         // ==========================================
-        function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
-        function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
-        async function fetchGitHubData() {
-            API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+        async function fetchData() {
             showToast("Syncing...");
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(SCRIPT_URL);
                 if (response.ok) {
-                    const data = await response.json();
-                    currentFileSHA = data.sha;
-                    try {
-                        players = JSON.parse(b64_to_utf8(data.content));
-                        renderApp();
-                        showToast("Synced!");
-                    } catch(e) { showToast("Data Error"); }
-                } else {
-                    showToast("No Data Found");
-                    players = [];
+                    const text = await response.text();
+                    if (text) {
+                        players = JSON.parse(text);
+                    } else {
+                        players = [];
+                    }
                     renderApp();
+                    showToast("Synced!");
+                } else {
+                    console.error("Fetch Error", response.status);
+                    showToast("Sync Failed");
                 }
             } catch (error) {
-                showToast("Sync Error");
                 console.error(error);
+                showToast("Network Error");
             }
         }
 
-        async function pushGitHubData() {
+        async function saveData() {
             showToast("Saving...");
-            API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-
             try {
-                // 1. Get current SHA
-                const getResponse = await fetch(API_URL);
-                if (getResponse.ok) {
-                    const data = await getResponse.json();
-                    currentFileSHA = data.sha;
-                } else if (getResponse.status === 404) {
-                    currentFileSHA = null;
-                } else {
-                    throw new Error(`Fetch Failed (${getResponse.status}): ${getResponse.statusText}`);
-                }
-
-                // 2. Prepare Payload
-                const contentBase64 = utf8_to_b64(JSON.stringify(players));
-                const body = {
-                    message: "Update scores via Junior Fiesta",
-                    content: contentBase64
-                };
-
-                if (currentFileSHA) {
-                    body.sha = currentFileSHA;
-                }
-
-                // 3. Send PUT Request
-                const putResponse = await fetch(API_URL, {
-                    method: 'PUT',
-                    headers: { 
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`, 
-                        'Content-Type': 'application/json' 
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: {
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify(players)
                 });
 
-                // 4. Handle Response
-                if (putResponse.ok) {
-                    const data = await putResponse.json();
-                    currentFileSHA = data.content.sha;
-                    showToast("Saved!");
-                    playSound('win');
-                } else {
-                    const errorData = await putResponse.json();
-                    console.error("GitHub Error:", errorData);
-                    
-                    let msg = errorData.message;
-                    // Helpful hint for 401/403 errors
-                    if(putResponse.status === 401 || putResponse.status === 403) {
-                        msg += "\n\n⚠️ PERMISSION ERROR:\nYour token works, but you didn't check the 'repo' box when creating it.\n\nPlease go to GitHub Settings -> Tokens and check the 'repo' scope.";
-                    }
-                    alert(`Save Failed: ${msg}`);
-                }
-
+                showToast("Saved!");
+                playSound('win');
             } catch (error) {
-                console.error("Critical Error:", error);
-                alert(`Critical Error: ${error.message}`);
+                console.error("Save Error:", error);
+                showToast("Save Failed");
             }
         }
 
@@ -459,11 +408,11 @@
             document.getElementById('app').style.display = 'block';
             
             const video = document.getElementById('bg-video');
-            video.play().catch(e => console.log("Autoplay blocked, needs interaction"));
+            video.play().catch(e => console.log("Autoplay blocked"));
 
             setTimeout(() => {
                 document.getElementById('app').classList.add('visible');
-                fetchGitHubData();
+                fetchData();
             }, 100);
         }
 
@@ -535,7 +484,7 @@
             const rect = event.target.getBoundingClientRect();
             showComicEffect(rect.left, rect.top, delta > 0 ? "POW!" : "BAM!");
             renderApp();
-            pushGitHubData();
+            saveData();
         }
 
         function showComicEffect(x, y, text) {
@@ -549,10 +498,10 @@
         }
 
         function deletePlayer(index) {
-            if(confirm('Knock out?')) { playSound('pop'); players.splice(index,1); renderApp(); pushGitHubData(); }
+            if(confirm('Knock out?')) { playSound('pop'); players.splice(index,1); renderApp(); saveData(); }
         }
         function newGame() {
-            if(confirm("New Season?")) { playSound('win'); players.forEach(p=>p.score=0); renderApp(); pushGitHubData(); }
+            if(confirm("New Season?")) { playSound('win'); players.forEach(p=>p.score=0); renderApp(); saveData(); }
         }
 
         function openAddModal() {
@@ -572,13 +521,13 @@
             const name = document.getElementById('player-name-input').value.trim();
             if(!name) return showToast("Name required!");
             players.push({ id: Date.now(), name: name, score: 0 });
-            closeModal('name-modal'); renderApp(); pushGitHubData(); playSound('win');
+            closeModal('name-modal'); renderApp(); saveData(); playSound('win');
         }
         function saveScoreManual() {
             const val = parseInt(document.getElementById('score-input').value);
             if(!isNaN(val) && editingScoreId !== null) {
                 players[editingScoreId].score = val;
-                closeModal('score-modal'); renderApp(); pushGitHubData(); playSound('win');
+                closeModal('score-modal'); renderApp(); saveData(); playSound('win');
             }
         }
 
