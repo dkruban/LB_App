@@ -275,7 +275,6 @@
 <body>
 
     <!-- VIDEO BACKGROUND -->
-    <!-- Using your GitHub file directly via raw.githubusercontent.com -->
     <video id="bg-video" autoplay muted loop playsinline>
         <source src="https://raw.githubusercontent.com/dkruban/LB_App/main/video.mp4" type="video/mp4">
     </video>
@@ -411,24 +410,11 @@
         }
 
         // ==========================================
-        // 2. DATA HANDLING
+        // 2. DATA HANDLING (No LocalStorage)
         // ==========================================
         
-        // Load Local Data first for instant UI
-        function loadLocalData() {
-            const saved = localStorage.getItem('juniorFiestaData');
-            if (saved) {
-                try { players = JSON.parse(saved); } catch(e) {}
-            }
-        }
-
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
-
-        function saveLocalData() {
-            localStorage.setItem('juniorFiestaData', JSON.stringify(players));
-            renderApp();
-        }
 
         function fetchGitHubData(manualSync = false) {
             if(manualSync) showToast("🔄 Syncing with Cloud...");
@@ -449,28 +435,25 @@
                     currentFileSHA = data.sha;
                     try {
                         players = JSON.parse(b64_to_utf8(data.content));
-                        saveLocalData(); // Update local backup
                         if(manualSync) showToast("☁️ Synced Successfully!");
                     } catch(e) { showToast("⚠️ Corrupt Cloud Data"); }
                 } else {
-                    // File doesn't exist, use local data or empty
-                    loadLocalData();
+                    // If no cloud data, players remains empty (no persistence)
+                    players = [];
                 }
                 renderApp();
             })
             .catch(err => {
                 if(manualSync) showToast("❌ Sync Failed (Network/Token?)");
                 console.error(err);
-                loadLocalData(); // Fallback to local
+                // On error, do not load old data. Start fresh.
+                players = [];
                 renderApp();
             });
         }
 
         function pushGitHubData() {
-            // 1. Update UI instantly
-            saveLocalData();
-
-            // 2. Push to GitHub in background
+            // 1. Prepare Data
             const body = { 
                 message: "Update scores via Junior Fiesta", 
                 content: utf8_to_b64(JSON.stringify(players)) 
@@ -478,21 +461,47 @@
             
             if (currentFileSHA) body.sha = currentFileSHA;
             
+            // 2. Attempt Push
             fetch(API_URL, {
                 method: 'PUT',
                 headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             })
-            .then(r => {
-                if(r.ok) return r.json();
-                // If conflict, refetch SHA and try again (simplified here)
-                if(r.status === 409) fetchGitHubData(); 
-                throw new Error("Save Failed");
+            .then(async r => {
+                if (r.ok) return r.json();
+
+                // --- SMART RETRY LOGIC ---
+                if (r.status === 409) {
+                    console.log("Conflict detected. Updating SHA and retrying...");
+                    try {
+                        const data = await fetch(API_URL, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN } }).then(res => res.json());
+                        currentFileSHA = data.sha;
+                        body.sha = currentFileSHA;
+
+                        const retry = await fetch(API_URL, {
+                            method: 'PUT',
+                            headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body)
+                        });
+
+                        if (!retry.ok) throw new Error("Retry Failed");
+                        return retry.json();
+
+                    } catch (retryError) {
+                        throw new Error("Conflict & Retry Failed.");
+                    }
+                }
+
+                const errorText = await r.text();
+                throw new Error(`HTTP ${r.status}: ${errorText}`);
             })
             .then(data => { 
                 currentFileSHA = data.content.sha; 
             })
-            .catch(e => console.log("Cloud save failed (using local storage):", e));
+            .catch(e => {
+                console.error("Cloud save failed:", e);
+                alert("Error saving to GitHub: " + e.message);
+            });
         }
 
         // ==========================================
@@ -508,8 +517,8 @@
 
             setTimeout(() => {
                 document.getElementById('app').classList.add('visible');
-                loadLocalData();
-                fetchGitHubData(); // Auto-fetch cloud data on start
+                // Removed loadLocalData() - Starts empty every time
+                fetchGitHubData(); 
             }, 100);
         }
 
@@ -526,8 +535,6 @@
         function renderPodium() {
             const container = document.getElementById('podium-container');
             container.innerHTML = '';
-            // array indices: 0 is 1st, 1 is 2nd, 2 is 3rd
-            // display order: 2nd, 1st, 3rd
             let top3 = [players[1], players[0], players[2]].filter(p => p !== undefined);
 
             if (players.length === 0) {
@@ -585,7 +592,8 @@
             const rect = event.target.getBoundingClientRect();
             showComicEffect(rect.left, rect.top, delta > 0 ? "POW!" : "BAM!");
             
-            pushGitHubData();
+            renderApp(); // Update UI
+            pushGitHubData(); // Save to Cloud
         }
 
         function showComicEffect(x, y, text) {
@@ -602,14 +610,16 @@
             if(confirm('Knock out this fighter?')) { 
                 playSound('pop'); 
                 players.splice(index,1); 
-                pushGitHubData(); 
+                renderApp(); // Update UI
+                pushGitHubData(); // Save to Cloud
             }
         }
         function newGame() {
             if(confirm("New Season? Reset all scores to 0?")) { 
                 playSound('win'); 
                 players.forEach(p=>p.score=0); 
-                pushGitHubData(); 
+                renderApp(); // Update UI
+                pushGitHubData(); // Save to Cloud
             }
         }
 
@@ -633,7 +643,8 @@
             if(!name) return showToast("Name required!");
             players.push({ id: Date.now(), name: name, score: 0 });
             closeModal('name-modal'); 
-            pushGitHubData(); 
+            renderApp(); // Update UI
+            pushGitHubData(); // Save to Cloud
             playSound('win');
             showToast("Fighter Added!");
         }
@@ -642,7 +653,8 @@
             if(!isNaN(val) && editingScoreId !== null) {
                 players[editingScoreId].score = val;
                 closeModal('score-modal'); 
-                pushGitHubData(); 
+                renderApp(); // Update UI
+                pushGitHubData(); // Save to Cloud
                 playSound('win');
             }
         }
