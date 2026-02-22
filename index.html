@@ -299,7 +299,7 @@
         // Please delete this token from GitHub Settings after you confirm the app works.
         const GITHUB_OWNER = "dkruban";
         const GITHUB_REPO = "LD_App";
-        const GITHUB_TOKEN = "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"; 
+        const GITHUB_TOKEN = "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"; 
         const DATA_FILE = "data.json";
         
         let API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
@@ -426,7 +426,13 @@
                 } else {
                     const errorData = await putResponse.json();
                     console.error("GitHub Error:", errorData);
-                    alert(`Save Failed: ${errorData.message}\n\nCheck console for details.`);
+                    
+                    let msg = errorData.message;
+                    // Helpful hint for 401/403 errors
+                    if(putResponse.status === 401 || putResponse.status === 403) {
+                        msg += "\n\n⚠️ PERMISSION ERROR:\nYour token works, but you didn't check the 'repo' box when creating it.\n\nPlease go to GitHub Settings -> Tokens and check the 'repo' scope.";
+                    }
+                    alert(`Save Failed: ${msg}`);
                 }
 
             } catch (error) {
