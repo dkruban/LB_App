@@ -101,7 +101,16 @@
             margin-bottom: 40px; background: var(--glass); backdrop-filter: blur(15px);
             padding: 20px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             border: 2px solid var(--glass-border);
+            align-items: center;
         }
+        
+        /* Search Bar Style */
+        .search-box {
+            padding: 15px 30px; border: 4px solid #eee; border-radius: 30px;
+            font-family: 'Fredoka One'; font-size: 1.2rem; width: 100%; max-width: 300px;
+            outline: none; color: var(--dark);
+        }
+
         .btn-tool {
             padding: 15px 30px; border: none; border-radius: 20px; font-weight: 900;
             cursor: pointer; font-family: 'Fredoka One', cursive; font-size: 1.2rem;
@@ -189,6 +198,7 @@
         .btn-plus { background: var(--secondary); }
         .btn-minus { background: var(--primary); }
         .btn-del { background: #a4b0be; font-size: 1.4rem; width: 45px; height: 45px;}
+        .btn-edit { background: #3742fa; font-size: 1.4rem; width: 45px; height: 45px;}
 
         .comic-text {
             position: absolute; font-family: 'Bangers', cursive;
@@ -237,15 +247,16 @@
     <div class="settings-fab" onclick="toggleSettings()">⚙️</div>
 
     <div id="intro-screen">
-        <h1 class="blast-title" id="main-title">F I E S T A - J U N I O R</h1>
-        <button class="btn-main-start" id="start-btn" onclick="startApp()">LET'S START...!</button>
+        <h1 class="blast-title" id="main-title">FEASTA JUNIOR</h1>
+        <button class="btn-main-start" id="start-btn" onclick="startApp()">START BATTLE!</button>
     </div>
 
     <div id="app">
         <div class="toolbar">
-            <button class="btn-tool btn-add" onclick="openAddModal()">+ Add Fighter</button>
-            <button class="btn-tool btn-refresh" onclick="fetchData()">🔄 Sync Cloud</button>
-            <button class="btn-tool btn-new-game" onclick="newGame()">🎮 New Game</button>
+            <input type="text" id="search-input" class="search-box" placeholder="🔍 Search Fighter..." onkeyup="searchPlayer()">
+            <button class="btn-tool btn-add" onclick="openAddModal()">+ Add</button>
+            <button class="btn-tool btn-refresh" onclick="fetchData()">🔄 Sync</button>
+            <button class="btn-tool btn-new-game" onclick="newGame()">🎮 New</button>
         </div>
 
         <h2 class="section-title">🏆 CHAMPIONS 🏆</h2>
@@ -255,6 +266,7 @@
         <div class="list-container" id="player-list"></div>
     </div>
 
+    <!-- SETTINGS MODAL -->
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; margin-bottom: 20px;">Settings</h2>
@@ -267,6 +279,7 @@
         </div>
     </div>
 
+    <!-- NAME MODAL -->
     <div class="modal-overlay" id="name-modal">
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; color: var(--primary); margin-bottom:10px;">New Fighter</h2>
@@ -278,6 +291,7 @@
         </div>
     </div>
 
+    <!-- SCORE MODAL -->
     <div class="modal-overlay" id="score-modal">
         <div class="modal-card">
             <h2 style="font-family: 'Fredoka One'; color: var(--accent); margin-bottom:10px;">Update Power</h2>
@@ -289,16 +303,29 @@
         </div>
     </div>
 
+    <!-- EDIT MODAL (NEW) -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-card">
+            <h2 style="font-family: 'Fredoka One'; color: #3742fa; margin-bottom:10px;">Edit Fighter</h2>
+            <input type="text" id="edit-name-input" placeholder="Name..." autocomplete="off">
+            <input type="number" id="edit-score-input" placeholder="Score">
+            <div style="display:flex; justify-content:space-between; gap:15px;">
+                <button class="btn-tool btn-new-game" style="flex:1;" onclick="closeModal('edit-modal')">Cancel</button>
+                <button class="btn-tool btn-add" style="flex:1; background: #3742fa;" onclick="saveEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==========================================
         // 1. CONFIG & STATE
         // ==========================================
-        
-        // YOUR GOOGLE SCRIPT URL IS BELOW:
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4yddWbgT_KNaLINI36LcYNdxHwXPHoCPiR766Ilb94Kiyn64OxNEylycmuLlvlvs6vw/exec";
 
         let players = [];
         let editingScoreId = null;
+        let editingIndex = null; // For the new Edit Modal
+        let searchQuery = "";
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
@@ -417,7 +444,9 @@
         }
 
         function renderApp() {
+            // Sort by score
             players.sort((a, b) => b.score - a.score);
+            
             renderPodium();
             renderList();
         }
@@ -455,27 +484,75 @@
         function renderList() {
             const list = document.getElementById('player-list');
             list.innerHTML = '';
-            if (players.length === 0) return list.innerHTML = '<p style="text-align:center; color:white; font-family: Fredoka One;">Empty Ring!</p>';
+            
+            // Filter players based on search
+            const filteredPlayers = players.filter(p => 
+                p.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
 
-            players.forEach((p, index) => {
+            if (filteredPlayers.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:white; font-family: Fredoka One;">Empty Ring!</p>';
+                return;
+            }
+
+            // Note: We iterate over filteredPlayers, but we need the index from the MAIN 'players' array for the buttons
+            filteredPlayers.forEach((p) => {
+                // Find the actual index in the main array
+                const realIndex = players.findIndex(player => player.id === p.id);
+
                 const row = document.createElement('div');
                 row.className = 'list-row';
-                row.style.animationDelay = `${index * 0.1}s`;
+                // Display rank based on sorted position
+                const displayRank = players.indexOf(p) + 1;
+                
                 row.innerHTML = `
-                    <div class="list-rank">#${index + 1}</div>
+                    <div class="list-rank">#${displayRank}</div>
                     <img src="${getAvatar(p.name)}" class="list-avatar">
                     <div class="list-info">
                         <div class="list-name">${p.name}</div>
                     </div>
                     <div class="list-controls">
-                        <button class="btn-ctrl btn-minus" onclick="changeScore(${index}, -5)">−</button>
-                        <button class="btn-ctrl btn-plus" onclick="changeScore(${index}, 5)">+</button>
-                        <div class="score-box" onclick="openScoreModal(${index})">${p.score}</div>
-                        <button class="btn-ctrl btn-del" onclick="deletePlayer(${index})">🗑</button>
+                        <button class="btn-ctrl btn-minus" onclick="changeScore(${realIndex}, -5)">−</button>
+                        <button class="btn-ctrl btn-plus" onclick="changeScore(${realIndex}, 5)">+</button>
+                        <div class="score-box" onclick="openScoreModal(${realIndex})">${p.score}</div>
+                        <button class="btn-ctrl btn-edit" onclick="openEditModal(${realIndex})">✏️</button>
+                        <button class="btn-ctrl btn-del" onclick="deletePlayer(${realIndex})">🗑</button>
                     </div>
                 `;
                 list.appendChild(row);
             });
+        }
+
+        // --- NEW EDIT FUNCTIONS ---
+        function openEditModal(index) {
+            editingIndex = index;
+            document.getElementById('edit-name-input').value = players[index].name;
+            document.getElementById('edit-score-input').value = players[index].score;
+            document.getElementById('edit-modal').classList.add('active');
+        }
+
+        function saveEdit() {
+            if (editingIndex !== null) {
+                const newName = document.getElementById('edit-name-input').value.trim();
+                const newScore = parseInt(document.getElementById('edit-score-input').value);
+
+                if(!newName) return showToast("Name required!");
+                if(isNaN(newScore)) return showToast("Score required!");
+
+                players[editingIndex].name = newName;
+                players[editingIndex].score = newScore;
+
+                closeModal('edit-modal');
+                renderApp(); // Re-sort and render
+                saveData();
+                playSound('win');
+            }
+        }
+
+        // --- SEARCH FUNCTION ---
+        function searchPlayer() {
+            searchQuery = document.getElementById('search-input').value;
+            renderList(); // Re-render list only
         }
 
         function changeScore(index, delta) {
